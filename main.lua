@@ -6,7 +6,7 @@ function love.load()
     t = 0 -- total game runtime
 
     bullets = {}
-    bulletSpeed = 300
+    bulletSpeed = 500
 
     player = {
         x = 250,
@@ -32,12 +32,13 @@ end
 
 -- update function
 function love.update(dt)
-    t = t + dt
+    t = t + dt -- Timer for wobbly sin() bullet glow.
     
     for k,v in ipairs(bullets) do
         v.x = v.x + (v.dx * dt)
         v.y = v.y + (v.dy * dt)
 
+        -- No forever bullets! >:(
         v.life = v.life - dt
         if v.life <= 0 then
             table.remove(bullets, k)
@@ -47,7 +48,7 @@ function love.update(dt)
             v.y >= monster.y and v.y <= (monster.y + monster.height) then
                 monster.x = math.random(0, 800)
                 monster.y = math.random(0, 580)
-                table.remove(bullets, k)
+                table.remove(bullets, k) -- Destroy bullet on contact
         end
     end
 
@@ -87,17 +88,21 @@ end
 -- draw function
 function love.draw()
     for k, v in ipairs(bullets) do
+        -- Yellow Outer Transparent Glow
         love.graphics.setColor(1, 1, 0, 0.2)
-        love.graphics.circle("fill", v.x, v.y, 16 + math.sin(t * 30) * 4)
+        love.graphics.circle("fill", v.x, v.y, 16 + math.sin(t * 30) * 2)
 
+        -- Yellow Outer Shine
         love.graphics.setColor(1, 1, 0)
         love.graphics.circle("fill", v.x, v.y, 10)
+
+        -- White Bullet "Core"
         love.graphics.setColor(1, 1, 1)
         love.graphics.circle("fill", v.x, v.y, 6)
     end
 
+    -- Sprites
     love.graphics.setColor(1, 1, 1)
-
     love.graphics.draw(monster.sprite, monster.x, monster.y)
     love.graphics.draw(player.sprite, player.x, player.y)
 end
