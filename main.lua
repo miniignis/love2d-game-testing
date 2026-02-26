@@ -3,6 +3,8 @@
 function love.load()
     love.graphics.setBackgroundColor(0.2, 0.2, 0.5)
 
+    t = 0 -- total game runtime
+
     bullets = {}
     bulletSpeed = 300
 
@@ -22,6 +24,7 @@ function love.load()
         y = 0,
         width = 32,
         height = 32,
+        sprite = love.graphics.newImage("evilsprite.png")
     }
 
     math.randomseed(os.time())
@@ -29,6 +32,7 @@ end
 
 -- update function
 function love.update(dt)
+    t = t + dt
     
     for k,v in ipairs(bullets) do
         v.x = v.x + (v.dx * dt)
@@ -41,8 +45,9 @@ function love.update(dt)
 
         if v.x >= monster.x and v.x <= (monster.x + monster.width) and
             v.y >= monster.y and v.y <= (monster.y + monster.height) then
-                monster.x = math.random(0, 320)
-                monster.y = math.random(0, 320)
+                monster.x = math.random(0, 800)
+                monster.y = math.random(0, 580)
+                table.remove(bullets, k)
         end
     end
 
@@ -74,20 +79,26 @@ function love.update(dt)
     player.x = player.x + player.dx * dt
     player.y = player.y + player.dy * dt
 
-    player.x = player.x % 820
-    player.y = player.y % 560
+    player.x = player.x % 800
+    player.y = player.y % 580
 
 end
 
 -- draw function
 function love.draw()
     for k, v in ipairs(bullets) do
-        love.graphics.setColor(0, 0, 0)
-        love.graphics.circle("fill", v.x, v.y, 4)
+        love.graphics.setColor(1, 1, 0, 0.2)
+        love.graphics.circle("fill", v.x, v.y, 16 + math.sin(t * 30) * 4)
+
+        love.graphics.setColor(1, 1, 0)
+        love.graphics.circle("fill", v.x, v.y, 10)
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.circle("fill", v.x, v.y, 6)
     end
 
     love.graphics.setColor(1, 1, 1)
 
+    love.graphics.draw(monster.sprite, monster.x, monster.y)
     love.graphics.draw(player.sprite, player.x, player.y)
 end
 
